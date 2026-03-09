@@ -10,13 +10,13 @@ bypass script.  No intermediate JSON file required.
 Usage
 -----
     python3 flutter_ssl_pinning.py libflutter.so
-    python3 flutter_ssl_pinning.py libflutter.so --output bypass.js
-    python3 flutter_ssl_pinning.py libflutter.so --all-funcs
-    python3 flutter_ssl_pinning.py libflutter.so --save-json   # also write recon JSON
+    python3 flutter_ssl_pinning.py libflutter.so bypass.js
+    python3 flutter_ssl_pinning.py libflutter.so bypass.js --all-funcs
+    python3 flutter_ssl_pinning.py libflutter.so bypass.js --save-json   # also write recon JSON
 
 Options
 -------
-  --output          Output .js path          (default: flutter_ssl_pinning.js)
+  output (positional) Output .js path          (default: flutter_ssl_pinning.js)
   --module          Module name in Frida      (default: libflutter.so)
   --keyword         SSL string keyword        (default: ssl_client)
   --all-funcs       Hook all xref functions, not only 3-param candidates
@@ -454,7 +454,8 @@ def main() -> int:
         help="Path to target binary (e.g. libflutter.so)",
     )
     parser.add_argument(
-        "--output",
+        "output",
+        nargs="?",
         default="flutter_ssl_pinning.js",
         help="Output Frida script path (default: flutter_ssl_pinning.js)",
     )

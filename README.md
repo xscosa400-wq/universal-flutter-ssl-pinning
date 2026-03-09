@@ -43,7 +43,11 @@ The generated script hooks the SSL verify function and patches its return value 
 ### Step 1 — Generate the Frida script
 
 ```bash
+# output defaults to flutter_ssl_pinning.js
 python3 flutter_ssl_pinning.py libflutter.so
+
+# specify a custom output path as a positional argument
+python3 flutter_ssl_pinning.py libflutter.so bypass.js
 ```
 
 Console output:
@@ -76,7 +80,7 @@ frida -U -f com.example.app -l flutter_ssl_pinning.js
 | Option | Default | Description |
 |---|---|---|
 | `binary` | *(required)* | Path to `libflutter.so` |
-| `--output OUTPUT` | `flutter_ssl_pinning.js` | Output Frida script path |
+| `output` | `flutter_ssl_pinning.js` | Output Frida script path (positional, optional) |
 | `--module MODULE` | `libflutter.so` | Module name as seen in the target process |
 | `--keyword KEYWORD` | `ssl_client` | SSL string to search for in the binary |
 | `--all-funcs` | off | Hook all xref functions, not only 3-param candidates |
