@@ -1,0 +1,25 @@
+# Binaries
+*.so
+*.apk
+*.dex
+*.aar
+
+# Ghidra temp files
+.ghidra_projects/
+*.rep/
+*.gpr
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.ruff_cache/
+.venv/
+venv/
+
+# macOS
+.DS_Store
+
+# Generated output (re-created by the script)
+shorebird_ssl_pinning.js
+*_ssl_recon.json
