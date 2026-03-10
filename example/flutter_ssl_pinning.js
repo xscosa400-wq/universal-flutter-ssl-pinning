@@ -31,6 +31,7 @@ function bypassSslPinning() {
         return;
     }
     console.log("[*] SSL pinning bypass starting (" + HOOK_CANDIDATES.length + " candidate(s))");
+    console.log("[+] " + TARGET_MODULE + " found at: " + mod.base);
     HOOK_CANDIDATES.forEach(function (c) { hookCandidate(mod, c); });
     console.log("[+] Done.");
 }

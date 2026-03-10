@@ -228,6 +228,7 @@ function bypassSslPinning() {{
         return;
     }}
     console.log("[*] SSL pinning bypass starting (" + HOOK_CANDIDATES.length + " candidate(s))");
+    console.log("[+] " + TARGET_MODULE + " found at: " + mod.base);
     HOOK_CANDIDATES.forEach(function (c) {{ hookCandidate(mod, c); }});
     console.log("[+] Done.");
 }}
@@ -236,12 +237,51 @@ setTimeout(bypassSslPinning, 1000);
 '''
 
 
+def generate_lua(candidates: list[dict], module_name: str) -> str:
+    lines = ["local HOOK_CANDIDATES = {"]
+    for i, fn in enumerate(candidates):
+        comma = "," if i < len(candidates) - 1 else ""
+        lines.append(
+            f'  {{ name = "{fn["name"]}", rva = {fn["rva"]}, '
+            f'params = {fn["parameter_count"]} }}{comma}'
+        )
+    lines.append("}")
+    candidates_block = "\n".join(lines)
+
+    return f'''local TARGET_MODULE = "{module_name}"
+
+{candidates_block}
+
+local base = Module.find(TARGET_MODULE)
+if not base then
+    print("[-] Module not found: " .. TARGET_MODULE)
+    return
+end
+
+print("[*] SSL pinning bypass starting (" .. #HOOK_CANDIDATES .. " candidate(s))")
+print(string.format("[+] %s found at: 0x%x", TARGET_MODULE, base))
+
+-- ssl_crypto_x509_session_verify_cert_chain returns bool: true (1) = success.
+-- Patch the function entry to: MOV X0, #1 ; RET
+-- This avoids hook trampoline issues entirely.
+-- MOV X0, #1 = \\x20\\x00\\x80\\xd2  (ARM64 little-endian)
+-- RET         = \\xc0\\x03\\x5f\\xd6
+for _, candidate in ipairs(HOOK_CANDIDATES) do
+    local addr = base + candidate.rva
+    Memory.patch(addr, "\\x20\\x00\\x80\\xd2\\xc0\\x03\\x5f\\xd6")
+    print(string.format("[+] Patched %s @ 0x%x", candidate.name, addr))
+end
+
+print("[+] Done.")
+'''
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(
         description="libflutter.so -> PyGhidra SSL recon -> Frida bypass script"
     )
     parser.add_argument("binary", help="Path to libflutter.so")
-    parser.add_argument("output", nargs="?", default="flutter_ssl_pinning.js", help="Output .js path")
+    parser.add_argument("output", nargs="?", default="flutter_ssl_pinning", help="Output base name (generates <name>.js and <name>.lua)")
     parser.add_argument("--module", default="libflutter.so", help="Module name in target process")
     parser.add_argument("--ghidra-install-dir", default=None, help="Ghidra installation directory")
     args = parser.parse_args()
@@ -292,12 +332,19 @@ def main() -> int:
         print(f"    {fn['name']}  RVA={fn['rva']}  params={fn['parameter_count']}")
 
     js_text = generate_js(candidates, args.module)
-    output_path = Path(args.output).expanduser().resolve()
-    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_base = Path(args.output).expanduser().resolve().with_suffix("")
+    output_base.parent.mkdir(parents=True, exist_ok=True)
+    output_path = output_base.with_suffix(".js")
     output_path.write_text(js_text, encoding="utf-8")
 
+    lua_output_path = output_base.with_suffix(".lua")
+    lua_text = generate_lua(candidates, args.module)
+    lua_output_path.write_text(lua_text, encoding="utf-8")
+
     print(f"[+] Written: {output_path}")
+    print(f"[+] Written: {lua_output_path}")
     print(f"\n    frida -U -f <package> -l {output_path.name}")
+    print(f"    renef -s <package> -l {lua_output_path.name}")
 
     return 0
 
