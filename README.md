@@ -12,10 +12,6 @@ Reverse-engineers `libflutter.so` with PyGhidra to locate the SSL certificate ve
    - A **Frida** script (`flutter_ssl_pinning.js`) that patches the return value to `ptr(1)` (SSL_VERIFY_OK) at runtime
    - A **Renef** script (`flutter_ssl_pinning.lua`) that uses `Memory.patch` to overwrite the function entry with `MOV X0, #1 ; RET` (ARM64)
 
-### Why `Memory.patch` instead of `hook()` for Renef
-
-Flutter's `libflutter.so` is compiled with aggressive optimization (LTO + `-O3`). The SSL verification function uses **tail calls** (`B` branch instead of `BL`+`RET`) and PC-relative instructions (`ADRP`) in its prologue. A trampoline-based hook (`hook()`) must copy and relocate these instructions into a stub — if relocation fails, the stub executes broken instructions and **crashes the app**. `Memory.patch` sidesteps this entirely by overwriting the function entry with two safe, position-independent ARM64 instructions that immediately return success, with no trampoline or stub needed.
-
 ## Requirements
 
 - [Ghidra](https://ghidra-sre.org/) — `brew install ghidra`
@@ -65,7 +61,7 @@ See the [`example/`](example/) directory for sample generated output.
 | Shorebird-patched Flutter builds | ✅ Working |
 | Ghidra 12.x + pyghidra | ✅ Working |
 | Frida 16.x | ✅ Working |
-| Renef (latest) | ✅ Working (Memory.patch) |
+| Renef (latest) | ✅ Working |
 
 > Both Google Flutter and Shorebird use the same `libflutter.so` SSL engine.
 > The auto-discovered RVA is identical across build types for the same Flutter engine version.
