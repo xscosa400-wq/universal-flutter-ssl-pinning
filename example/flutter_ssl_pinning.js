@@ -24,16 +24,42 @@ function hookCandidate(mod, candidate) {
     }
 }
 
-function bypassSslPinning() {
-    var mod = Process.findModuleByName(TARGET_MODULE);
-    if (!mod) {
-        console.log("[-] Module not found: " + TARGET_MODULE);
-        return;
-    }
+function bypassSslPinning(mod) {
     console.log("[*] SSL pinning bypass starting (" + HOOK_CANDIDATES.length + " candidate(s))");
-    console.log("[+] " + TARGET_MODULE + " found at: " + mod.base);
+    console.log("[+] " + TARGET_MODULE + " found at: " + mod.base + " size: " + mod.size);
     HOOK_CANDIDATES.forEach(function (c) { hookCandidate(mod, c); });
     console.log("[+] Done.");
 }
 
-setTimeout(bypassSslPinning, 1000);
+// Check if already loaded (in case we attach late)
+var mod = Process.findModuleByName(TARGET_MODULE);
+if (mod) {
+    console.log("[*] " + TARGET_MODULE + " already loaded, hooking now...");
+    bypassSslPinning(mod);
+} else {
+    console.log("[*] " + TARGET_MODULE + " not yet loaded, waiting for it...");
+
+    var listener = Interceptor.attach(Module.findExportByName(null, "android_dlopen_ext") || Module.findExportByName(null, "dlopen"), {
+        onEnter: function (args) {
+            var path = args[0].readCString();
+            if (path && path.indexOf("libflutter.so") !== -1) {
+                console.log("[*] Detected load: " + path);
+                this.isTarget = true;
+            }
+        },
+        onLeave: function (retval) {
+            if (this.isTarget) {
+                var loadedMod = Process.findModuleByName(TARGET_MODULE);
+                if (loadedMod) {
+                    bypassSslPinning(loadedMod);
+                    listener.detach();
+                    console.log("[*] Listener detached.");
+                } else {
+                    console.log("[-] dlopen returned but module not found yet");
+                }
+            }
+        }
+    });
+
+    console.log("[*] Listening on dlopen/android_dlopen_ext...");
+}
